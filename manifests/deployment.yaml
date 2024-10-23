@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    alpha.image.policy.openshift.io/resolve-names: '*'
+    app.openshift.io/route-disabled: 'false'
+    app.openshift.io/vcs-ref: ''
+    app.openshift.io/vcs-uri: 'https://github.com/oliveira-shiai/spring-artemis-consumer-v2.git'
+    deployment.kubernetes.io/revision: '1'
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"spring-artemis-consumer:latest","namespace":"app-spring"},"fieldPath":"spec.template.spec.containers[?(@.name==\"spring-artemis-consumer\")].image","paused":"false"}]'
+  name: spring-artemis-consumer
+  namespace: app-spring
+  labels:
+    app: spring-artemis-consumer
+  namespace: app-spring
+  labels:
+    app: spring-artemis-consumer
+    app.kubernetes.io/component: spring-artemis-consumer
+    app.kubernetes.io/instance: spring-artemis-consumer
+    app.kubernetes.io/name: spring-artemis-consumer
+    app.kubernetes.io/part-of: spring-artemis-consumer
+    app.openshift.io/runtime: java
+    app.openshift.io/runtime-version: openjdk-17-ubi8
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-artemis-consumer
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: spring-artemis-consumer
+        deployment: spring-artemis-consumer
+    spec:
+      containers:
+        - name: spring-artemis-consumer
+          image: 'image-registry.openshift-image-registry.svc:5000/app-spring/spring-artemis-consumer:latest'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
